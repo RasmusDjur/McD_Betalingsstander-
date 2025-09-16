@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kiosk – Burgers</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <h1 class="brand">Burger Kiosk</h1>
+        <nav class="tabs">
+            <a class="tab" href="#section-burgers">Burgers</a>
+            <a class="tab" href="#section-chicken-fish">Chicken &amp; Fish</a>
+            <a class="tab" href="#section-sides-dips">Sides &amp; Dips</a>
+            <a class="tab" href="#section-drinks">Drinks</a>
+            <a class="tab" href="#section-icecream">Icecream</a>
+        </nav>
+
+    </header>
+
+    <!-- SIDEPANEL: KURV -->
+<aside class="cart" aria-label="Kurv">
+  <header class="cart__header">
+    <h3>Kurv</h3>
+    <button class="cart__clear" type="button">Annullér ordre</button>
+  </header>
+
+  <div class="cart__today">
+  <span>Omsat i dag</span>
+  <strong id="cart-revenue">0,00 kr.</strong>
+  </div>
+
+  <ul class="cart__list" id="cart-list">
+    <!-- fyldes af JS -->
+  </ul>
+
+  <div class="cart__footer">
+    <div class="cart__row">
+      <span>Antal</span><strong id="cart-count">0</strong>
+    </div>
+    <div class="cart__row cart__total">
+      <span>Total</span><strong id="cart-total">0,00 kr.</strong>
+    </div>
+    <button class="cart__pay" type="button" id="cart-pay" disabled>Betal</button>
+  </div>
+</aside>
+
+<!-- MODAL: VÆLG ANTAL -->
+<div class="modal" id="qty-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="qty-title">
+  <div class="modal__backdrop"></div>
+  <div class="modal__dialog">
+    <header class="modal__header">
+      <h4 id="qty-title">Tilføj til kurv</h4>
+      <button class="modal__close" type="button" data-close-modal>✕</button>
+    </header>
+
+    <div class="modal__body">
+      <div class="qty__info">
+        <div class="qty__name" id="qty-name">Vare</div>
+        <div class="qty__price" id="qty-price">0,00 kr.</div>
+      </div>
+
+      <label class="qty__label" for="qty-input">Antal</label>
+      <div class="qty__controls">
+        <button class="qty__btn" type="button" id="qty-minus">−</button>
+        <input id="qty-input" class="qty__input" type="number" min="1" max="99" value="1" inputmode="numeric" />
+        <button class="qty__btn" type="button" id="qty-plus">+</button>
+      </div>
+    </div>
+
+    <footer class="modal__footer">
+      <button class="btn btn--ghost" type="button" data-close-modal>Annullér</button>
+      <button class="btn btn--primary" type="button" id="qty-add">Læg i kurv</button>
+    </footer>
+  </div>
+</div>
+
+<!-- MODAL: KVITTERING (låst) -->
+<div class="modal" id="receipt-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="receipt-title" data-locked="true">
+  <div class="modal__backdrop"></div>
+  <div class="modal__dialog">
+    <header class="modal__header">
+      <h4 id="receipt-title">Kvittering</h4>
+    </header>
+
+    <div class="modal__body">
+      <div class="receipt__row">
+        <span>Ordrenr.</span>
+        <strong id="receipt-number">—</strong>
+      </div>
+      <ul class="receipt__list" id="receipt-list"></ul>
+      <div class="receipt__total">
+        <span>Total</span>
+        <strong id="receipt-total">0,00 kr.</strong>
+      </div>
+    </div>
+
+    <footer class="modal__footer">
+      <button class="btn btn--primary" type="button" id="receipt-new">Ny ordre</button>
+    </footer>
+  </div>
+</div>
+
+
+
+    <!-- Sektion: Burgers -->
+    <section class="menu-section" id="section-burgers">
+      <h2 class="menu-section__heading">Burgers</h2>
+      <div class="grid">
+ 
+        <article class="item">
+          <div class="item__name">Classic Burger</div>
+          <a class="item__media" href="#" aria-label="Classic Burger">
+            <img src="./assets/Hamburger.jpg" alt="Classic Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="15">15,00 kr.</span>
+          </footer>
+        </article>
+
+
+        <article class="item">
+          <div class="item__name">Cheeseburger</div>
+          <a class="item__media" href="#" aria-label="Cheeseburger">
+            <img src="./assets/Cheeseburger.jpg" alt="Cheeseburger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="20">20,00 kr.</span>
+          </footer>
+        </article>
+
+
+        <article class="item">
+          <div class="item__name">BBQ Burger</div>
+          <a class="item__media" href="#" aria-label="BBQ Burger">
+            <img src="./assets/BBQburger.jpg" alt="BBQ Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="52">52,00 kr.</span>
+          </footer>
+        </article>
+
+
+        <article class="item">
+          <div class="item__name">Bacon Deluxe</div>
+          <a class="item__media" href="#" aria-label="Bacon Deluxe">
+            <img src="./assets/BaconDeluxe.webp" alt="Bacon Deluxe" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="52">52,00 kr.</span>
+          </footer>
+        </article>
+
+
+        <article class="item">
+          <div class="item__name">Homestyle Bearnaise</div>
+          <a class="item__media" href="#" aria-label="Bacon Deluxe">
+            <img src="./assets/Homestyle_Bearnaise.jpg" alt="Bacon Deluxe" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="52">52,00 kr.</span>
+          </footer>
+        </article>
+
+  
+        <article class="item">
+          <div class="item__name">Chicken Salsa Cheese</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/Chicken_Salsa_Cheese.jpg" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="25">25,00 kr.</span>
+          </footer>
+        </article>
+
+
+        <article class="item">
+          <div class="item__name">Crispy Burger</div>
+          <a class="item__media" href="#" aria-label="Spicy Burger">
+            <img src="./assets/McCrispy.jpg" alt="Spicy Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="52">52,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Filet-O-Fish</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/filet-o-fish.jpg" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="49">49,00 kr.</span>
+          </footer>
+        </article>
+
+
+        <article class="item">
+          <div class="item__name">Vegan Burger</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/Veganburger.avif" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="49">49,00 kr.</span>
+          </footer>
+        </article>
+
+
+      </div>
+    </section>
+
+    <section class="menu-section" id="section-chicken-fish">
+      <h2 class="menu-section__heading">Chicken & Fish</h2>
+      <div class="grid">
+ 
+        <article class="item">
+          <div class="item__name">Chicken Nuggets</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/chicken-mcnuggets.jpg" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="20">20,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Hot Wings</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/Hot_Wings.jpg" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="20">20,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Mix Team Box</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/MixTeamBox.jpg" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="77">77,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Chicken Salsa Cheese</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/Chicken_Salsa_Cheese.jpg" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="25">25,00 kr.</span>
+          </footer>
+        </article>
+
+
+        <article class="item">
+          <div class="item__name">Crispy Burger</div>
+          <a class="item__media" href="#" aria-label="Spicy Burger">
+            <img src="./assets/McCrispy.jpg" alt="Spicy Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="52">52,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Filet-O-Fish</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/filet-o-fish.jpg" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="49">49,00 kr.</span>
+          </footer>
+        </article>
+      </div>
+    </section>
+
+
+    <section class="menu-section" id="section-sides-dips">
+      <h2 class="menu-section__heading">Sides & Dips</h2>
+      <div class="grid">
+ 
+        <article class="item">
+          <div class="item__name">Pommes Frites</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/pommes-frites.jpg" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="20">20,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Chili Cheese Tops</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/Chili_Cheese_Tops.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="15">15,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Æblestykker</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/aeblestykker.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="10">10,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Gulerødder</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/guleroedder.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="10">10,00 kr.</span>
+          </footer>
+        </article>
+
+
+        <article class="item">
+          <div class="item__name">Ketchup</div>
+          <a class="item__media" href="#" aria-label="Spicy Burger">
+            <img src="./assets/ketchup.png" alt="Spicy Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="7">7,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Mayo</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/mayo.jpg" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="7">7,00 kr.</span>
+          </footer>
+        </article>
+
+         <article class="item">
+          <div class="item__name">Chili Mayo</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/chili-mayo.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="7">7,00 kr.</span>
+          </footer>
+        </article>
+
+         <article class="item">
+          <div class="item__name">Bearnaise</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/bearnaise-dip.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="7">7,00 kr.</span>
+          </footer>
+        </article>
+
+         <article class="item">
+          <div class="item__name">BBQ</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/BBQ-dip.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="7">7,00 kr.</span>
+          </footer>
+        </article>
+
+
+
+      </div>
+
+
+    </section>
+
+
+   
+   
+    <section class="menu-section" id="section-drinks">
+        <h2 class="menu-section__heading">Drinks</h2>
+      <div class="grid">
+ 
+        <article class="item">
+          <div class="item__name">Cola</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/cola.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="31">31,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Cola Zero</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/cola_zero.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="31">31,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Sprite Zero</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/sprite_zero.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="31">31,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Fanta</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/fanta.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="31">31,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Fyze Tea</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/fyze_tea.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="28">28,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Appelsin Juice</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/appelsin_juice.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="25">25,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Æble Juice</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/aeble_juice.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="25">25,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Jordbær Milkshake</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/milkshake_jordbær.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="36">36,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Chokolade Milkshake</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/milkshake_choko.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="36">36,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Vanilje Milkshake</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/milkshake_vanilje.jpg" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="36">36,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Frappe Caramel</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/frappe_caramel.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="38">38,00 kr.</span>
+          </footer>
+        </article>
+        
+        <article class="item">
+          <div class="item__name">Frappe Choco</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/frappe_choco.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="38">38,00 kr.</span>
+          </footer>
+        </article>
+
+      </div>
+
+    </section>
+
+    <section class="menu-section" id="section-icecream">
+        <h2 class="menu-section__heading">Icecream</h2>
+      <div class="grid">
+ 
+        <article class="item">
+          <div class="item__name">Smarties</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/smarties.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="31">31,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Sundae Choco</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/sundae_choco.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="20">20,00 kr.</span>
+          </footer>
+        </article>
+
+        <article class="item">
+          <div class="item__name">Sundae Caramel</div>
+          <a class="item__media" href="#" aria-label="Vegan Burger">
+            <img src="./assets/sundae_caramel.png" alt="Vegan Burger" />
+          </a>
+          <footer class="item__footer">
+            <span class="price" data-price="20">20,00 kr.</span>
+          </footer>
+        </article>
+
+      </div>
+
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
