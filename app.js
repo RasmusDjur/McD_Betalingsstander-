@@ -8,58 +8,61 @@ function initRevenue(){
     sessionStorage.setItem(REV_KEY, '0');
   }
 }
+
 function getRevenue(){
   const v = parseFloat(sessionStorage.getItem(REV_KEY) || '0');
   return Number.isFinite(v) ? v : 0;
 }
+
 function addRevenue(amount){
   const next = getRevenue() + amount;
   sessionStorage.setItem(REV_KEY, String(next));
   renderRevenue();
 }
+
 function renderRevenue(){
   const el = document.getElementById('cart-revenue');
   if (el) el.textContent = fmt.format(getRevenue());
 }
+
 initRevenue();
 
 
+
 // --- Ordrenummer: session-baseret, reset når fanen lukkes ---
+// --- Sørger for at vi starter på 1 
 const ORDER_KEY = 'orderCounter';
 function initOrderCounter(){
   if (!sessionStorage.getItem(ORDER_KEY)) {
     sessionStorage.setItem(ORDER_KEY, '1');
   }
 }
+// --- Giver det nuværende Ordrenummer
 function currentOrderNumber(){
   const n = parseInt(sessionStorage.getItem(ORDER_KEY) || '1', 10);
   return Number.isFinite(n) && n > 0 ? n : 1;
 }
+// --- Øger Ordrenummer +1
 function incrementOrderNumber(){
   const next = currentOrderNumber() + 1;
   sessionStorage.setItem(ORDER_KEY, String(next));
 }
 initOrderCounter();
 
-
-// --- Hjælpere ---
+// --- Parse pris fra html element 
 function parsePriceFromEl(priceEl) {
   if (!priceEl) return 0;
   // Brug data-price hvis muligt
   const d = priceEl.dataset?.price;
-  if (d && !Number.isNaN(+d)) return +d;
-  // Ellers parse fra tekst "49,00 kr."
-  const t = priceEl.textContent || '';
-  const num = t.replace(/[^\d,.-]/g, '').replace(',', '.');
-  const val = parseFloat(num);
-  return Number.isFinite(val) ? val : 0;
+  return d && !Number.isNaN(+d) ? +d : 0;
 }
-function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
 
 // --- State for kurv ---
 let cart = []; // {id, name, unit, qty}
 
 // --- UI refs ---
+// Burger 
 const qtyModal    = document.getElementById('qty-modal');
 const qtyNameEl   = document.getElementById('qty-name');
 const qtyPriceEl  = document.getElementById('qty-price');
@@ -68,13 +71,12 @@ const qtyMinus    = document.getElementById('qty-minus');
 const qtyPlus     = document.getElementById('qty-plus');
 const qtyAdd      = document.getElementById('qty-add');
 let   pendingItem = null; // {id, name, unit}
-
-const cartList  = document.getElementById('cart-list');
-const cartCount = document.getElementById('cart-count');
-const cartTotal = document.getElementById('cart-total');
+// Betaling
+const cartList     = document.getElementById('cart-list');
+const cartCount    = document.getElementById('cart-count');
+const cartTotal    = document.getElementById('cart-total');
 const cartClearBtn = document.querySelector('.cart__clear');
 const cartPayBtn   = document.getElementById('cart-pay');
-
 // Kvittering
 const receiptModal  = document.getElementById('receipt-modal');
 const receiptNumber = document.getElementById('receipt-number');
@@ -82,11 +84,12 @@ const receiptList   = document.getElementById('receipt-list');
 const receiptTotal  = document.getElementById('receipt-total');
 const receiptNew    = document.getElementById('receipt-new');
 
-// --- Modal helpers ---
+// --- Åbner receiptModal & qtyModal
 function openModal(modalEl){
   modalEl.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
 }
+// --- Lukker receiptModal & qtyModal 
 function closeModal(modalEl){
   modalEl.setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
@@ -106,16 +109,11 @@ document.addEventListener('click', (e) => {
   const item = e.target.closest('.item');
   if (!item) return;
 
-  // undgå at # i billedernes <a href="#"> hopper til toppen
-  const mediaLink = e.target.closest('.item__media');
-  if (mediaLink) e.preventDefault();
-
-  const name = item.querySelector('.item__name')?.textContent?.trim() || 'Vare';
-  const priceEl = item.querySelector('.price');
-  const unit = parsePriceFromEl(priceEl);
-  if (!unit) return; // hvis ingen pris, så gør ingenting
+  const name = item.querySelector('.item__name').textContent.trim();
+  const unit = parsePriceFromEl(item.querySelector('.price'));
 
   pendingItem = { id: name.toLowerCase(), name, unit };
+
   qtyNameEl.textContent  = name;
   qtyPriceEl.textContent = fmt.format(unit);
   qtyInput.value = 1;
@@ -124,17 +122,21 @@ document.addEventListener('click', (e) => {
 });
 
 // Antal +/- i modal
-qtyMinus.addEventListener('click', () => { qtyInput.value = clamp(parseInt(qtyInput.value || '1', 10) - 1, 1, 99); });
-qtyPlus .addEventListener('click', () => { qtyInput.value = clamp(parseInt(qtyInput.value || '1', 10) + 1, 1, 99); });
+qtyMinus.addEventListener('click', () => { 
+  qtyInput.value = Math.max(1,parseInt(qtyInput.value || '1', 10) - 1);
+});
+qtyPlus.addEventListener('click', () => { 
+  qtyInput.value = Math.max(1,parseInt(qtyInput.value || '1', 10) + 1); 
+});
 
 // Læg i kurv
 qtyAdd.addEventListener('click', () => {
   if (!pendingItem) return;
-  const qty = clamp(parseInt(qtyInput.value || '1', 10), 1, 99);
+  const qty = Math.max(1,parseInt(qtyInput.value || '1', 10));
 
   const existing = cart.find(i => i.id === pendingItem.id && i.unit === pendingItem.unit);
   if (existing) {
-    existing.qty = clamp(existing.qty + qty, 1, 999);
+    existing.qty = Math.max(1,existing.qty + qty);
   } else {
     cart.push({ ...pendingItem, qty });
   }
@@ -175,11 +177,10 @@ function renderCart(){
 cartList.addEventListener('click', (e) => {
   const btn = e.target.closest('[data-remove]');
   if (!btn) return;
+  
   const idx = parseInt(btn.dataset.remove, 10);
-  if (Number.isInteger(idx)) {
-    cart.splice(idx, 1);
-    renderCart();
-  }
+  cart.splice(idx, 1);
+  renderCart();
 });
 
 // Annullér ordre (ryd kurv)
@@ -223,17 +224,16 @@ receiptNew.addEventListener('click', () => {
   closeModal(receiptModal);
 
   // Tilbage til hovedmenu (Burgers)
-  if (location.hash !== '#section-burgers') {
-    location.hash = '#section-burgers';
-  } else {
-    // hvis vi allerede er på #section-burgers, så force-scroll til top
-    document.querySelector('#section-burgers')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+  // if (location.hash !== '#section-burgers') {
+  //   location.hash = '#section-burgers';
+  // } else {
+  //   // hvis vi allerede er på #section-burgers, så force-scroll til top
+  //   document.querySelector('#section-burgers')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // }
+
+  document.querySelector('#section-burgers')
+  ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
-
-
-// --- (Valgfrit) hvis dine faner er <a href="#...">, bevar "aktiv" med :has() i CSS.
-// Ingen JS nødvendig for scroll – din smooth anchor-løsning virker allerede.
 
 // Start
 renderCart();
